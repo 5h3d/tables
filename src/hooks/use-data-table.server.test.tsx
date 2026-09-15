@@ -1,8 +1,8 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useDataTable, type TableFetcher } from './use-data-table'
-import { users, type User } from '@/demo/data'
-import type { TableQuery } from '@/lib/data-table/query'
+import { users, type User } from '../demo/data'
+import type { TableQuery } from '../lib/data-table/query'
 
 const columns: ColumnDef<User>[] = [
   { accessorKey: 'name', header: 'Name' },

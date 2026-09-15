@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
+import { Button } from '../ui/button'
+import { Skeleton } from '../ui/skeleton'
+import { cn } from '../../lib/utils'
 import { useDataTableContext } from './data-table-context'
 
 export type EmptyStateRenderer = (ctx: { query: string | undefined; filtered: boolean; clear: () => void }) => React.ReactNode

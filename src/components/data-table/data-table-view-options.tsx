@@ -1,13 +1,13 @@
 import * as React from 'react'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Popover } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+import { Button } from '../ui/button'
+import { Checkbox } from '../ui/checkbox'
+import { Popover } from '../ui/popover'
+import { cn } from '../../lib/utils'
 import { columnLabel } from './columns'
 import { useDataTableContext } from './data-table-context'
 
 /**
- * "Columns" button + popover to show / hide columns (shadcn's view options).
+ * "Columns" button + popover to show / hide columns.
  * Columns opt out with `enableHiding: false`. Hidden columns disappear from
  * every layout, including mobile cards.
  */

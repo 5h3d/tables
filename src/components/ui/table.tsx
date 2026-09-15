@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
-/** shadcn table primitives, tuned to the design's spacing and colours. */
+/** Thin wrappers over the native table elements, carrying the shared styling. */
 export function Table({ className, ...props }: React.ComponentProps<'table'>) {
   return (
     <table

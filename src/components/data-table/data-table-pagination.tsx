@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button'
-import { NativeSelect } from '@/components/ui/native-select'
-import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
-import { pageRange } from '@/lib/data-table/pagination'
+import { Button } from '../ui/button'
+import { NativeSelect } from '../ui/native-select'
+import { Skeleton } from '../ui/skeleton'
+import { cn } from '../../lib/utils'
+import { pageRange } from '../../lib/data-table/pagination'
 import { useDataTableContext } from './data-table-context'
 
 const Chevron = ({ dir }: { dir: 'left' | 'right' }) => (

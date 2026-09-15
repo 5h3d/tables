@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 /**
- * Native <button> styled the shadcn way. Swap for shadcn's Radix/Slot version
- * later if you need `asChild`; the variant names line up.
+ * Plain <button> with variants. No headless-UI dependency: if you later want
+ * polymorphic rendering, wrap it yourself.
  */
 export const buttonVariants = cva(
   'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-semibold transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/25 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',

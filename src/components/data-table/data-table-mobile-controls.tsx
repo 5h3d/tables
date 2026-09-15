@@ -1,4 +1,4 @@
-import { NativeSelect } from '@/components/ui/native-select'
+import { NativeSelect } from '../ui/native-select'
 import { columnLabel, sortableColumns } from './columns'
 import { useDataTableContext } from './data-table-context'
 import { DataTableSelectAll } from './data-table-select'

@@ -1,5 +1,5 @@
 import type { Row } from '@tanstack/react-table'
-import { Menu } from '@/components/ui/menu'
+import { Menu } from '../ui/menu'
 import { useDataTableContext } from './data-table-context'
 
 export function DataTableRowActions<TData>({ row }: { row: Row<TData> }) {

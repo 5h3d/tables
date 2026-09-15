@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { flexRender, type Row } from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { columnLabel } from './columns'
 import { useDataTableContext } from './data-table-context'
 import { DataTableRowActions } from './data-table-row-actions'

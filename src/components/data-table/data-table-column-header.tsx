@@ -1,5 +1,5 @@
 import type { Column } from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { columnLabel } from './columns'
 
 const SortIcon = ({ dir }: { dir: false | 'asc' | 'desc' }) => {

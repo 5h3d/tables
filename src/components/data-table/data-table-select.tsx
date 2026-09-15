@@ -1,8 +1,8 @@
 import * as React from 'react'
 import type { Row } from '@tanstack/react-table'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Popover } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+import { Checkbox } from '../ui/checkbox'
+import { Popover } from '../ui/popover'
+import { cn } from '../../lib/utils'
 import { useDataTableContext } from './data-table-context'
 
 /** Header checkbox that cycles page selection, plus a caret menu with page / all / clear. */

@@ -15,8 +15,8 @@ import {
   type Table,
   type Updater,
 } from '@tanstack/react-table'
-import { fromSearchParams, toSearchParams, type SortSpec, type TableQuery } from '@/lib/data-table/query'
-import type { DataTableStatus, SelectionState } from '@/components/data-table/types'
+import { fromSearchParams, toSearchParams, type SortSpec, type TableQuery } from '../lib/data-table/query'
+import type { DataTableStatus, SelectionState } from '../components/data-table/types'
 import { useDebouncedValue } from './use-debounced-value'
 
 export type TableFetcherResult<TData> = { rows: TData[]; total: number }

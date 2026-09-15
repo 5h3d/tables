@@ -1,8 +1,8 @@
 import type { FilterFn, RowData } from '@tanstack/react-table'
-import type { Layout } from '@/lib/data-table/responsive'
+import type { Layout } from '../../lib/data-table/responsive'
 
 export type { Layout }
-export type { TableQuery, SortSpec } from '@/lib/data-table/query'
+export type { TableQuery, SortSpec } from '../../lib/data-table/query'
 
 export type DataTableStatus = 'idle' | 'loading' | 'success' | 'error'
 

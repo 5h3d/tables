@@ -2,8 +2,8 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from './data-table'
-import { useDataTable } from '@/hooks/use-data-table'
-import { users, type User } from '@/demo/data'
+import { useDataTable } from '../../hooks/use-data-table'
+import { users, type User } from '../../demo/data'
 
 const columns: ColumnDef<User>[] = [
   { accessorKey: 'name', header: 'Name', meta: { card: 'title' } },

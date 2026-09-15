@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useDataTable } from './use-data-table'
-import { users, type User } from '@/demo/data'
+import { users, type User } from '../demo/data'
 
 const columns: ColumnDef<User>[] = [
   { accessorKey: 'name', header: 'Name' },

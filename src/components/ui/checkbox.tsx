@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 export type CheckedState = boolean | 'indeterminate'
 
@@ -10,7 +10,7 @@ export type CheckboxProps = Omit<React.ComponentProps<'input'>, 'checked' | 'onC
 
 /**
  * Native checkbox styled to the design (16px, 1.5px border, indigo when set).
- * Same props surface as shadcn's Radix checkbox so it can be swapped later.
+ * Controlled: pass `checked` (or 'indeterminate') and handle `onCheckedChange`.
  */
 export function Checkbox({ checked, onCheckedChange, className, ...props }: CheckboxProps) {
   const ref = React.useRef<HTMLInputElement>(null)

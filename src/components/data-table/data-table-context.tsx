@@ -1,7 +1,7 @@
 import * as React from 'react'
 import type { Row } from '@tanstack/react-table'
-import type { MenuItem } from '@/components/ui/menu'
-import type { DataTableInstance } from '@/hooks/use-data-table'
+import type { MenuItem } from '../ui/menu'
+import type { DataTableInstance } from '../../hooks/use-data-table'
 import type { Layout } from './types'
 
 export type Density = 'compact' | 'comfortable' | 'spacious'
