@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "./dist/types",
+    "rootDir": "./src",
+    "allowImportingTsExtensions": false,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.lib.tsbuildinfo",
+    "types": ["vite/client"]
+  },
+  "include": ["src/index.ts", "src/components", "src/hooks", "src/lib"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
+}

@@ -1,0 +1,19 @@
+/*
+ * Stylesheet shipped with the package (`@5h3d/tables/styles.css`).
+ *
+ * It contains the design tokens plus only the utility classes the components
+ * actually use. Tailwind's preflight is deliberately left out so importing
+ * this file cannot restyle the rest of your app.
+ *
+ * Using Tailwind yourself? Skip this file and add the package source to your
+ * content sources instead, so the utilities are generated in your own build.
+ */
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@source "../components";
+@source "../hooks";
+
+@import "../styles/tokens.css";

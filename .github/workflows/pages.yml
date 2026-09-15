@@ -25,13 +25,12 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm registry:build
       - run: pnpm build
         env:
           VITE_BASE: /${{ github.event.repository.name }}/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist-demo
 
   deploy:
     needs: build

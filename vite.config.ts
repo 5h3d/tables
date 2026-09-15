@@ -8,6 +8,7 @@ export default defineConfig({
   base: process.env.VITE_BASE ?? '/',
   plugins: [react(), tailwindcss()],
   resolve: { alias: { '@': path.resolve(import.meta.dirname, './src') } },
+  build: { outDir: 'dist-demo' },
   test: {
     environment: 'jsdom',
     globals: true,
