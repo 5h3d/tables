@@ -1,41 +1,39 @@
 # Tables
 
-A shadcn-style, **mobile-responsive** data table for React. One set of column
-definitions renders as a full table on desktop, a folded table on tablet, and
-either a card list or a pinned-column scroll view on phones. Works with data in
-memory (**client mode**) or one page at a time from an API (**server mode**).
+> I hate when tables are not responsive.
 
-**Demo:** https://5h3d.github.io/tables
+Every table library I reach for looks great on a laptop and falls apart on a
+phone. You get a horizontal scrollbar swallowing half the columns, a header row
+that drifts away from its data, or a "mobile mode" that quietly drops the
+columns you actually needed.
 
-- Sorting, debounced global search, faceted filters, numbered pagination
-- Row selection with an indeterminate header checkbox, "select page / select all N" on every layout, and a bulk-action bar
-- Show / hide columns from a "Columns" control (opt columns out with `enableHiding: false`)
-- Row action menus, toolbar action slot, empty / loading (skeleton) / error states
-- Density (compact / comfortable / spacious) and zebra striping
-- Server mode: abortable fetches, keep-previous-data, retry, optional URL sync
-- Native elements only (no Radix); styled with Tailwind v4 and shadcn CSS variables
-- Built on [TanStack Table v8](https://tanstack.com/table)
+So this is a React data table where the small screen is part of the design, not
+an afterthought. You write your columns once. On a wide screen you get a normal
+table. On a tablet, secondary columns fold underneath their neighbours. On a
+phone, each row becomes a readable card, or a horizontally scrolling table with
+the first column pinned, whichever suits your data.
+
+It handles the boring parts too: sorting, search, filters, selection, bulk
+actions, row menus, pagination, and the empty, loading and error states. Your
+data can live in memory or come from an API one page at a time.
+
+**[Try the demo](https://5h3d.github.io/tables)** — resize the window, or open
+the playground and drag the width slider.
 
 ## Install
 
-Like any shadcn block, the source is copied into your project so you own it:
-
 ```bash
-npx shadcn@latest add https://5h3d.github.io/tables/r/data-table.json
+npm install 5h3d/tables @tanstack/react-table
 ```
 
-This adds `components/data-table/*`, the native `components/ui/*` primitives it
-uses, `hooks/use-data-table.ts` and `lib/data-table/*`, installs
-`@tanstack/react-table`, and appends the extra colour tokens to your CSS.
-Your project needs Tailwind v4 with a shadcn theme (`--primary`, `--muted`,
-`--border`, …) and the `@/` alias.
+`react`, `react-dom` and `@tanstack/react-table` v8 are peer dependencies.
 
-## Usage
+## Quick start
 
 ```tsx
 import type { ColumnDef } from '@tanstack/react-table'
-import { DataTable } from '@/components/data-table'
-import { useDataTable } from '@/hooks/use-data-table'
+import { DataTable, useDataTable } from '@5h3d/tables'
+import '@5h3d/tables/styles.css'
 
 type User = { id: string; name: string; email: string; role: string; status: string; createdAt: string }
 
@@ -43,23 +41,18 @@ const columns: ColumnDef<User>[] = [
   { accessorKey: 'name', header: 'Name', meta: { card: 'title', pinned: 'left' } },
   { accessorKey: 'email', header: 'Email', meta: { foldInto: 'name', card: 'subtitle' } },
   { accessorKey: 'role', header: 'Role', meta: { card: 'meta' } },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    meta: { card: 'badge', filter: { options: [{ label: 'Active', value: 'active' }] } },
-  },
+  { accessorKey: 'status', header: 'Status', meta: { card: 'badge' } },
   { accessorKey: 'createdAt', header: 'Date created', meta: { card: 'meta', cardLabel: 'Created' } },
 ]
 
 export function UsersTable({ users }: { users: User[] }) {
   const instance = useDataTable({ mode: 'client', data: users, columns })
+
   return (
     <DataTable
       instance={instance}
       title="Users"
       entity={{ singular: 'user', plural: 'users' }}
-      actions={<button>Add user</button>}
-      bulkActions={(selection, { clear }) => <button onClick={clear}>Export {selection.count}</button>}
       rowActions={(row) => [
         { label: 'Edit', onSelect: () => edit(row.original) },
         { label: 'Delete', destructive: true, separatorBefore: true, onSelect: () => remove(row.original) },
@@ -69,88 +62,164 @@ export function UsersTable({ users }: { users: User[] }) {
 }
 ```
 
-### Server mode
+That is the whole setup. The hook owns the state, the component renders it, and
+the layout follows the width of whatever container you drop it into.
 
-Give the hook a `fetcher` instead of `data`. Every sort / search / filter /
-page change becomes a `TableQuery`; the hook aborts stale requests, keeps the
-previous page visible while the next loads, and exposes `refetch` for the
-error state's Retry button.
+## What responsive actually means here
+
+The table measures **its own container**, not the viewport, so it behaves the
+same inside a narrow sidebar as it does on a small phone.
+
+| Container width | What you get |
+| --- | --- |
+| 1024px and up | The full table. Every column, a numbered pager, row menus. |
+| 640–1023px | Columns marked `foldInto` move under their target column as a second line, so the table stops overflowing. |
+| Below 640px | Rows become cards built from your column roles. Or set `mobile="scroll"` for a scrolling table with the checkbox and first column pinned. |
+
+Nothing is hidden behind a media query you cannot reach: pass `layout` to force
+a specific rendering, which is handy for tests and for stories.
+
+## Server-side data
+
+Swap `data` for a `fetcher` and every change becomes one request. The hook
+cancels requests that are no longer relevant, keeps the current page on screen
+while the next one loads, and hands you `refetch` for the Retry button.
 
 ```tsx
+import { useDataTable, toSearchParams } from '@5h3d/tables'
+
 const instance = useDataTable({
   mode: 'server',
   columns,
-  syncUrl: true, // mirror page/size/sort/q/filters into location.search
+  syncUrl: true, // keeps page, size, sort, search and filters in the address bar
   fetcher: async (query, signal) => {
     const res = await fetch(`/api/users?${toSearchParams(query)}`, { signal })
+    if (!res.ok) throw new Error('Could not load users')
     const json = await res.json()
     return { rows: json.items, total: json.total }
   },
 })
 ```
 
-`TableQuery` is `{ page, pageSize, sort?: { id, desc }, q?, filters: Record<string, string[]> }`.
-`toSearchParams` / `fromSearchParams` in `lib/data-table/query.ts` encode it as
-`?page=2&size=20&sort=name.desc&q=ann&f.status=active,pending`.
+A query looks like this:
 
-### Column `meta`
+```ts
+type TableQuery = {
+  page: number // 1-based
+  pageSize: number
+  sort?: { id: string; desc: boolean }
+  q?: string // debounced search box
+  filters: Record<string, string[]> // column id -> selected values
+}
+```
 
-| key         | effect                                                                                 |
-| ----------- | -------------------------------------------------------------------------------------- |
-| `foldInto`  | tablet: render inside the target column's cell as a second line (e.g. email under name) |
-| `hideOn`    | `['tablet' \| 'mobile']` hide the column on those layouts                               |
-| `card`      | mobile cards: `'title' \| 'subtitle' \| 'badge' \| 'meta' \| 'body' \| 'hidden'`         |
-| `cardLabel` | prefix for `meta` values in cards ("Created Mar 4, 2026")                               |
-| `pinned`    | `'left'` keeps the column sticky in the mobile scroll layout                            |
-| `filter`    | `{ options }` adds the column to the Filter popover and to `query.filters`             |
-| `align`     | `'left' \| 'center' \| 'right'`                                                          |
-| `width`     | CSS width for the header cell                                                           |
-| `label`     | plain-text label used by the mobile sort select                                         |
+`toSearchParams` and `fromSearchParams` encode it as
+`?page=2&size=20&sort=name.desc&q=ann&f.status=active,pending`, so your backend
+has an obvious contract to implement. `src/demo/mock-api.ts` is a working
+example of the server side.
 
-### `<DataTable>` props
+Selection works across pages: when someone picks "Select all 78", you receive
+`{ ids: [], all: true, count: 78 }` and can turn that into a single bulk request
+instead of 78 ids.
 
-| prop                        | notes                                                                      |
-| --------------------------- | -------------------------------------------------------------------------- |
-| `instance`                  | result of `useDataTable`                                                   |
-| `title`, `description`      | toolbar heading                                                            |
-| `entity`                    | `{ singular, plural }` used in counts and state copy                        |
-| `search`                    | `{ placeholder }` or `false`                                               |
-| `filter`                    | show the built-in faceted Filter button (auto when any column has `meta.filter`) |
-| `columns`                   | show the Columns (show / hide) button, default `true`                      |
-| `actions`                   | toolbar slot (e.g. Add button)                                             |
-| `bulkActions(selection, { clear })` | content of the bulk bar next to "N selected"                       |
-| `rowActions(row)`           | `MenuItem[]` for the kebab menu                                            |
-| `layout`                    | `'auto'` (measure the container) or force `'desktop' \| 'tablet' \| 'mobile'` |
-| `mobile`                    | `'cards'` (default) or `'scroll'`                                          |
-| `density`, `zebra`          | row padding and striping                                                   |
-| `card(row)`                 | custom card body for mobile cards                                          |
-| `emptyState`, `errorState`, `errorSupport` | override the built-in states                              |
-| `pageSizeOptions`           | default `[10, 20, 50]`                                                     |
+## Column meta
 
-Breakpoints are based on the **container** width, not the viewport:
-desktop ≥ 1024px, tablet 640–1023px, mobile < 640px.
+`meta` is where a column says how it should behave when space runs out.
 
-### `useDataTable` result
+| Key | What it does |
+| --- | --- |
+| `foldInto` | On tablet, render this value inside the named column's cell (email under name). |
+| `card` | On phones: `'title'`, `'subtitle'`, `'badge'`, `'meta'`, `'body'` or `'hidden'`. |
+| `cardLabel` | Prefix for a `meta` value in a card, giving "Created Mar 4, 2026". |
+| `pinned` | `'left'` keeps the column visible in the scrolling mobile layout. |
+| `hideOn` | Drop the column entirely on `'tablet'`, `'mobile'` or both. |
+| `filter` | `{ options }` puts the column in the Filter popover and in `query.filters`. |
+| `align`, `width`, `label` | Cell alignment, header width, and the plain-text name used by the mobile sort control. |
 
-`initialState.hiddenColumns` hides columns until the user shows them.
+Columns can opt out of being hidden by hand with `enableHiding: false`, which is
+what you want for the column that identifies the row.
 
-`table` (TanStack instance), `status` (`idle | loading | success | error`),
-`isFetching`, `error`, `refetch()`, `query`, `total`, `search` / `setSearch`,
-`setFilter(columnId, values)` / `clearFilters()`, `selection`
-(`{ ids, all, count }`), `selectPage()`, `selectAll()`, `clearSelection()`.
+## DataTable props
+
+| Prop | Notes |
+| --- | --- |
+| `instance` | What `useDataTable` returned. |
+| `title`, `description` | Toolbar heading. |
+| `entity` | `{ singular, plural }`, used in counts and in state messages. |
+| `search` | `{ placeholder }`, or `false` to remove the search box. |
+| `filter`, `columns` | Show the Filter and Columns controls. Both default to on. |
+| `actions` | Your own buttons on the right of the toolbar. |
+| `bulkActions` | `(selection, { clear }) => ReactNode` for the bar that appears when rows are selected. |
+| `rowActions` | `(row) => MenuItem[]` for the row menu. |
+| `layout` | `'auto'` by default; force `'desktop'`, `'tablet'` or `'mobile'`. |
+| `mobile` | `'cards'` (default) or `'scroll'`. |
+| `density`, `zebra` | `'compact' \| 'comfortable' \| 'spacious'`, and striped rows. |
+| `card` | `(row) => ReactNode` if you want to lay the mobile card out yourself. |
+| `emptyState`, `errorState`, `errorSupport` | Replace or extend the built-in states. |
+| `pageSizeOptions`, `pagination` | Page size choices, and a switch to hide the footer. |
+
+## useDataTable
+
+```ts
+const {
+  table,          // the underlying TanStack table, if you need it
+  status,         // 'idle' | 'loading' | 'success' | 'error'
+  isFetching,     // a request is in flight, previous rows still shown
+  error, refetch,
+  query, total,
+  search, setSearch,
+  setFilter, clearFilters,
+  selection,      // { ids, all, count }
+  selectPage, selectAll, clearSelection,
+} = useDataTable(options)
+```
+
+Options common to both modes: `columns`, `getRowId`, `enableRowSelection`,
+`searchDebounceMs`, `syncUrl`, and `initialState` for the starting `page`,
+`pageSize`, `sort`, `q`, `filters` and `hiddenColumns`.
+
+## Styling
+
+The stylesheet ships with the design tokens plus only the utility classes the
+components use. There is no global reset in it, so importing it will not
+restyle the rest of your app.
+
+Restyle the table by overriding the variables it reads:
+
+```css
+:root {
+  --primary: #0f766e;
+  --radius: 0.75rem;
+  --border: #d9e2e0;
+}
+```
+
+Already using Tailwind? Skip the stylesheet and add the package source to your
+content sources instead, so the utilities come out of your own build:
+
+```css
+@source "../node_modules/@5h3d/tables/src";
+```
+
+## Prefer to own the code?
+
+Everything lives in readable files with no hidden dependencies, so copying is a
+first-class option: take `src/components/data-table`, `src/components/ui`,
+`src/hooks` and `src/lib` into your project and edit away. The imports between
+those files are relative, so nothing needs a path alias to work.
 
 ## Development
 
 ```bash
 pnpm install
-pnpm dev            # demo at http://localhost:5173
-pnpm test           # vitest
+pnpm dev        # demo on http://localhost:5173
+pnpm test       # vitest
 pnpm typecheck && pnpm lint
-pnpm registry:build # writes public/r/*.json for `shadcn add`
+pnpm build:lib  # the package build
 ```
 
-`src/demo/mock-api.ts` shows what a server needs to implement for server mode:
-it applies a `TableQuery` to a list and returns `{ rows, total }`.
+Issues and pull requests are welcome, especially ones about layouts that still
+feel wrong on a phone.
 
 ## License
 
