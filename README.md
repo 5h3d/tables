@@ -23,10 +23,12 @@ the playground and drag the width slider.
 ## Install
 
 ```bash
-npm install 5h3d/tables @tanstack/react-table
+npm install 5h3d/tables @tanstack/react-table@^8
 ```
 
-`react`, `react-dom` and `@tanstack/react-table` v8 are peer dependencies.
+`react`, `react-dom` and `@tanstack/react-table` are peer dependencies, so they
+stay on the copy your app already has. Pin TanStack Table to v8: v9 changed its
+API and is not supported yet.
 
 ## Quick start
 
